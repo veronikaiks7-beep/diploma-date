@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Приглашение в ΜΑΡΕ | Романтический вечер</title>
+    <!-- Google Fonts для элегантных курсивных шрифтов и греческого настроения -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (бесплатные иконки) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* легкий акцент, чтобы не мешать выделению, но не критично */
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #fef9f0 0%, #eef5ff 100%);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* декоративные греческие волны (абстракция) */
+        .wave-bg {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.25;
+        }
+
+        .wave-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* основной контейнер - карточка приглашения */
+        .card {
+            max-width: 680px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(1px);
+            border-radius: 56px;
+            box-shadow: 0 30px 50px rgba(0, 20, 40, 0.2), 0 8px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(173, 216, 230, 0.7);
+        }
+
+        /* бело-голубая лента вверху */
+        .accent-stripe {
+            height: 12px;
+            background: linear-gradient(90deg, #ffffff, #4aa3c2, #1e6f8c, #4aa3c2, #ffffff);
+        }
+
+        .content-wrap {
+            padding: 2rem 2rem 2.5rem;
+        }
+
+        /* блок вопроса (первый экран) */
+        .question-section {
+            text-align: center;
+            transition: opacity 0.5s ease, transform 0.4s ease;
+        }
+
+        .question-section.hide {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
+            display: none; /* полностью скрываем после анимации */
+        }
+
+        .invitation-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.5s ease;
+        }
+
+        .invitation-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* греческий орнамент (меандр) упрощенный */
+        .greek-border {
+            background: repeating-linear-gradient(90deg, #1e6f8c 0px, #1e6f8c 4px, #f0f9ff 4px, #f0f9ff 12px);
+            height: 4px;
+            width: 100px;
+            margin: 16px auto;
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: #1a5f7a;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .subhead {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: #2c7a9e;
+            font-size: 1.2rem;
+            border-top: 1px dashed #b9dfec;
+            display: inline-block;
+            padding-top: 8px;
+        }
+
+        .question-text {
+            font-size: 1.9rem;
+            font-family: 'Dancing Script', cursive;
+            color: #155f78;
+            margin: 1.2rem 0 1rem;
+            background: rgba(255, 255, 245, 0.6);
+            padding: 16px;
+            border-radius: 70px;
+            display: inline-block;
+            width: auto;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+            margin: 2rem 0 1rem;
+        }
+
+        .btn-love {
+            background: white;
+            border: 2px solid #4aa3c2;
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            border-radius: 50px;
+            color: #1e6f8c;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-love i {
+            font-size: 1.3rem;
+            color: #e67e8f;
+        }
+
+        .btn-love:hover {
+            background: #eefaff;
+            transform: translateY(-3px);
+            border-color: #1e6f8c;
+            box-shadow: 0 14px 22px -10px rgba(29, 108, 122, 0.3);
+        }
+
+        .btn-love:active {
+            transform: translateY(2px);
+        }
+
+        /* стили приглашения */
+        .invitation-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .invitation-header h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.4rem;
+            color: #1c6a86;
+            letter-spacing: 1px;
+        }
+
+        .resto-name {
+            font-size: 1.9rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            font-style: italic;
+            background: linear-gradient(135deg, #0f5c77, #3282a0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            display: inline-block;
+            margin: 6px 0;
+        }
+
+        .greek-icon {
+            font-size: 2rem;
+            letter-spacing: 8px;
+            color: #317e9b;
+        }
+
+        .diploma-note {
+            background: #f0f8fe;
+            border-radius: 48px;
+            padding: 10px 20px;
+            display: inline-block;
+            font-style: italic;
+            color: #1a5f7a;
+            font-weight: 500;
+            margin: 15px 0;
+            border-left: 4px solid #f7c56e;
+            border-right: 4px solid #f7c56e;
+        }
+
+        /* форма выбора даты и времени */
+        .datetime-picker {
+            background: #fefef7;
+            border-radius: 44px;
+            padding: 1.6rem 1.8rem;
+            margin: 28px 0 22px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255,255,255,0.8);
+            border: 1px solid #cbe5ef;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: space-between;
+            margin-bottom: 1.4rem;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: 600;
+            color: #115e7a;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+
+        .field label i {
+            margin-right: 8px;
+            color: #e9956e;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 60px;
+            border: 1px solid #cde3ec;
+            background: white;
+            font-size: 1rem;
+            font-family: 'Inter', monospace;
+            transition: 0.2s;
+            color: #1e4f66;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #3c9bc0;
+            box-shadow: 0 0 0 3px rgba(60, 155, 192, 0.2);
+        }
+
+        .extra-idea {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #4682b4;
+            margin: 12px 0;
+            background: #ecf7fc;
+            border-radius: 40px;
+            padding: 8px 16px;
+            display: inline-block;
+            width: auto;
+        }
+
+        .confirm-btn {
+            background: #1e6f8c;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            border-radius: 56px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 5px 12px rgba(30,111,140,0.3);
+        }
+
+        .confirm-btn:hover {
+            background: #0f5772;
+            transform: scale(0.98);
+        }
+
+        .response-message {
+            text-align: center;
+            margin-top: 22px;
+            font-style: italic;
+            font-weight: 500;
+            background: #dff2f5;
+            border-radius: 40px;
+            padding: 12px;
+            color: #146b48;
+            font-size: 1rem;
+            border-left: 5px solid #f7bc45;
+        }
+
+        .footer-heart {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: #7eabbd;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #9bc9dd, transparent);
+            margin: 16px 0;
+        }
+
+        @media (max-width: 550px) {
+            .content-wrap {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .question-text {
+                font-size: 1.5rem;
+            }
+            .btn-love {
+                padding: 10px 18px;
+                font-size: 1rem;
+            }
+            .invitation-header h2 {
+                font-size: 1.8rem;
+            }
+            .resto-name {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* анимация для появления ❤️ */
+        @keyframes gentleBump {
+            0% { transform: scale(0.97); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wave-bg">
+    <svg class="wave-svg" viewBox="0 0 1440 180" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#c2e0f0" fill-opacity="0.3" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,180L1392,180C1344,180,1248,180,1152,180C1056,180,960,180,864,180C768,180,672,180,576,180C480,180,384,180,288,180C192,180,96,180,48,180L0,180Z"></path>
+    </svg>
+</div>
+
+<div class="card">
+    <div class="accent-stripe"></div>
+    <div class="content-wrap">
+        <!-- СЕКЦИЯ ВОПРОСА -->
+        <div id="questionBlock" class="question-section">
+            <div class="greek-border"></div>
+            <h1>ΜΑΡΕ</h1>
+            <div class="subhead">ἔρως · θάλασσα · γεύση</div>
+            <div class="question-text">
+                <i class="fas fa-heart" style="color:#e67e8f;"></i> Любовь моя,<br> ты пойдешь со мной на свидание?
+            </div>
+            <div class="btn-group">
+                <button id="btnYes1" class="btn-love"><i class="fas fa-check-circle"></i> Да, конечно!</button>
+                <button id="btnYes2" class="btn-love"><i class="fas fa-sun"></i> Конечно, солнце мое!</button>
+            </div>
+            <div class="footer-heart">
+                <i class="fas fa-chevron-down"></i>   для нас двоих
+            </div>
+        </div>
+
+        <!-- СЕКЦИЯ ПРИГЛАШЕНИЯ (изначально скрыта) -->
+        <div id="invitationBlock" class="invitation-section">
+            <div class="invitation-header">
+                <div class="greek-border"></div>
+                <h2>Особое приглашение</h2>
+                <div class="resto-name">"МАРЕ" — греческий ресторан</div>
+                <div class="diploma-note">
+                    <i class="fas fa-graduation-cap"></i> Поздравляю нас с защитой дипломов! <i class="fas fa-champagne-glasses"></i><br>
+                    Отпразднуем этот день в стиле Эллады.
+                </div>
+            </div>
+
+            <!-- Блок выбора даты и времени -->
+            <div class="datetime-picker">
+                <div class="row">
+                    <div class="field">
+                        <label><i class="far fa-calendar-alt"></i> Выбери день, который подарит нам море эмоций</label>
+                        <input type="date" id="dateSelect" value="">
+                    </div>
+                    <div class="field">
+                        <label><i class="far fa-clock"></i> Время, когда зажгутся звёзды</label>
+                        <input type="time" id="timeSelect" value="19:00">
+                    </div>
+                </div>
+                <!-- маленькая милая заметка с идеей -->
+                <div style="text-align: center;">
+                    <span class="extra-idea"><i class="fas fa-olive-branch"></i> А потом прогуляемся по набережной? <i class="fas fa-umbrella-beach"></i></span>
+                </div>
+            </div>
+
+            <button id="confirmDateTimeBtn" class="confirm-btn">
+                <i class="fas fa-envelope-open-text"></i> Подтвердить свидание
+            </button>
+            <div id="responseMessage" class="response-message" style="display: none;"></div>
+
+            <!-- дополнительные штрихи - романтичное дополнение -->
+            <hr>
+            <div class="footer-heart">
+                <i class="fas fa-heart" style="color:#c45c6f;"></i>  Дипломы позади — студенческий могильник может передохнуть  <i class="fas fa-heart" style="color:#c45c6f;"></i>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ДОБАВЛЯЕМ НЕБОЛЬШОЙ РОМАНТИЧЕСКИЙ СЮРПРИЗ: акцент на греческие мотивы
+        const questionDiv = document.getElementById('questionBlock');
+        const invitationDiv = document.getElementById('invitationBlock');
+        const btnYes1 = document.getElementById('btnYes1');
+        const btnYes2 = document.getElementById('btnYes2');
+        const confirmBtn = document.getElementById('confirmDateTimeBtn');
+        const responseMsgDiv = document.getElementById('responseMessage');
+        const dateInput = document.getElementById('dateSelect');
+        const timeInput = document.getElementById('timeSelect');
+
+        // Устанавливаем минимальную дату на сегодня, чтобы нельзя было выбрать "вчера"
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const minDate = `${yyyy}-${mm}-${dd}`;
+        dateInput.setAttribute('min', minDate);
+        // по умолчанию предлагаем дату через 2 дня (акцент на будущий вечер)
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + 4);
+        const yyyyF = futureDate.getFullYear();
+        const mmF = String(futureDate.getMonth() + 1).padStart(2, '0');
+        const ddF = String(futureDate.getDate()).padStart(2, '0');
+        dateInput.value = `${yyyyF}-${mmF}-${ddF}`;
+        if (timeInput.value === "") timeInput.value = "19:00";
+
+        // общая функция перехода к приглашению (с анимацией)
+        function revealInvitation() {
+            // Добавляем плавное исчезновение блока вопроса
+            questionDiv.classList.add('hide');
+            // После небольшой задержки показываем приглашение
+            setTimeout(() => {
+                invitationDiv.classList.add('show');
+                // маленькая опция: скроллим к приглашению, если нужно
+                invitationDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Можно также сохранить состояние, что ответ дан
+                localStorage.setItem('mareInvitationAccepted', 'true');
+            }, 280);
+        }
+
+        // обработчики на обе кнопки
+        btnYes1.addEventListener('click', () => {
+            revealInvitation();
+        });
+        btnYes2.addEventListener('click', () => {
+            revealInvitation();
+        });
+
+        // функция красивой даты в читабельном формате (на русском)
+        function formatReadableDate(dateString) {
+            if (!dateString) return "выбранный день";
+            const dateObj = new Date(dateString);
+            return dateObj.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'long' });
+        }
+
+        // функция для отображения подтверждения
+        function showConfirmation() {
+            let selectedDate = dateInput.value;
+            let selectedTime = timeInput.value;
+
+            if (!selectedDate) {
+                responseMsgDiv.style.display = 'block';
+                responseMsgDiv.innerHTML = '<i class="fas fa-smile-wink"></i> Милый, выбери, пожалуйста, дату 🌊';
+                setTimeout(() => {
+                    if (responseMsgDiv.style.display === 'block') {
+                        // через 3 секунды не исчезаем, а можно оставить, но для красоты оставим, но убирать не будем.
+                    }
+                }, 2000);
+                return;
+            }
+
+            const formattedDate = formatReadableDate(selectedDate);
+            // добавим легкую греческую нотку в сообщение
+            const loveMessage = `
+                <i class="fas fa-heart" style="color:#d9516c;"></i> 
+                О, ναι! (о, да!) Жду тебя ${formattedDate} в ${selectedTime} в ресторане ΜΑΡΕ. 
+                <br><i class="fas fa-wine-glass-alt"></i>  Твое солнце уже выбирает наряд  💙
+            `;
+            responseMsgDiv.innerHTML = loveMessage;
+            responseMsgDiv.style.display = 'block';
+            // Дополнительно можно добавить анимацию легкого мерцания
+            responseMsgDiv.style.animation = 'gentleBump 0.4s ease';
+            setTimeout(() => {
+                responseMsgDiv.style.animation = '';
+            }, 500);
+
+            // Сохраняем выбранные дату и время в localStorage для памяти
+            localStorage.setItem('mareDate', selectedDate);
+            localStorage.setItem('mareTime', selectedTime);
+        }
+
+        // обработчик на кнопку "Подтвердить свидание"
+        confirmBtn.addEventListener('click', showConfirmation);
+
+        // если уже ранее был выбран ответ (не критично, но вдруг перезагрузка) - если было принято приглашение, показываем блок приглашения сразу?
+        // но мы не делаем авто-показ при перезагрузке, потому что вопрос должен быть первым впечатлением. Но можно проверить флаг, но лучше оставить классику.
+        // Однако, можно сделать красивый нюанс: если пользователь уже нажал "Да" и перезагрузил страницу, не теряем приглашение? 
+        // Второй вариант: если localStorage содержит mareInvitationAccepted = true, то показываем приглашение вместо вопроса.
+        const alreadyAccepted = localStorage.getItem('mareInvitationAccepted');
+        if (alreadyAccepted === 'true') {
+            // Сразу показать приглашение, минуя вопрос (это удобно, если он уже согласился, но в первый раз все равно кнопки нажимают)
+            // При этом вопрос скроем навсегда.
+            questionDiv.classList.add('hide');
+            invitationDiv.classList.add('show');
+            // восстановим выбранные ранее дату и время, если есть
+            const savedDate = localStorage.getItem('mareDate');
+            const savedTime = localStorage.getItem('mareTime');
+            if (savedDate && dateInput) dateInput.value = savedDate;
+            if (savedTime && timeInput) timeInput.value = savedTime;
+        }
+
+        // Дополнительная фишка: при выборе даты или времени, если уже подтверждение было показано - сбросим сообщение для нового выбора
+        dateInput.addEventListener('change', () => {
+            if (responseMsgDiv.style.display === 'block') {
+                responseMsgDiv.style.display = 'none';
+            }
+        });
+        timeInput.addEventListener('change', () => {
+            if (responseMsgDiv.style.display === 'block') {
+                responseMsgDiv.style.display = 'none';
+            }
+        });
+
+        // Эффект "морской бриз" - добавим маленькую иконку изменения курсива, просто для эстетики
+        const setGreekVibe = () => {
+            const randomWave = () => {
+                // ничего лишнего, просто настроение
+            };
+            randomWave();
+        };
+        setGreekVibe();
+
+        // Также реализуем возможность "сбросить" локальное хранилище? Не обязательно, но для полноты, если захочет обновить ответ, можно скрыто.
+        // Но не будем усложнять. 
+        // Добавим подсказку: если второй раз нажимает кнопку подтверждения - сообщение обновляется.
+        // Если пользователь захочет изменить дату - он может снова нажать "Подтвердить свидание" и новое сообщение появится.
+
+        // И наконец, прелесть: добавим красивый эффект появления с задержкой в самом начале (легкий fade-in для карточки)
+        document.querySelector('.card').style.animation = 'gentleBump 0.6s ease-out';
+    })();
+</script>
+</body>
+</html>
